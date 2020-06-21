@@ -113,38 +113,141 @@
 ;;Q5 - switcherbot
   (define (switcherbot sent)
     ;;insert your answer here
-    (error "not yet implemented")
+   (define (switch-helper sen)
+    (cond((empty? sen)'())
+         (else
+          (let ((fwd (first sen))
+                (bfsen (bf sen)))
+         (cond((equal? fwd 'you)
+          (se 'me (switch-helper bfsen)))
+         ((or (equal? fwd 'me)
+              (equal? fwd 'I))
+          (se 'you (switch-helper bfsen)))
+         ((equal? fwd 'am)
+          (se 'are (switch-helper bfsen)))
+         ((equal? fwd 'are)
+          (se 'am (switch-helper bfsen)))
+         ((equal? fwd 'was)
+          (se 'were (switch-helper bfsen)))
+         ((equal? fwd 'were)
+          (se 'was (switch-helper bfsen)))
+         ((equal? fwd 'my)
+          (se 'your (switch-helper bfsen)))
+         ((equal? fwd 'your)
+          (se 'my (switch-helper bfsen)))
+         ((equal? fwd 'yours)
+          (se 'mine (switch-helper bfsen)))
+         ((equal? fwd 'mine)
+          (se 'yours (switch-helper bfsen)))
+         (else (se fwd
+                   (switch-helper bfsen))))))))
+  (cond((equal? (first sent)'you)(se 'I (switch-helper (bf sent))))
+       ((equal? (first sent) 'I)(se 'you (switch-helper (bf sent))))
+       (else (se (first sent) (switch-helper (bf sent)))))
   )
 
 
 ;;Q6 - inquisitivebot
   (define (inquisitivebot sent)
     ;;insert your answer here
-    (error "not yet implemented")
+    (define (switch-helper sen)
+    (cond((empty? sen)'?)
+         ((equal? (first sen) 'I)(se 'you (switch-helper (bf sen))))
+         ((equal? (first sen) 'am)
+          (se 'are (switch-helper (bf sen))))
+         ((equal? (first sen) 'you)
+          (se 'me (switch-helper (bf sen))))
+         ((or (equal? (first sen) 'me)
+              (equal? (first sen) 'I))
+          (se 'you (switch-helper (bf sen))))
+         (else (se (first sen)
+                   (switch-helper (bf sen))))))
+    (switch-helper sent)
   )
   
 ;;Q7 - eliza
   (define (eliza sent)
     ;;insert your answer here
-    (error "not yet implemented")
+   (define (switch-helper sen)
+      (cond((empty? sen)'?)
+           (else
+          (let ((fwd (first sen))
+                (bfsen (bf sen)))
+         (cond((equal? fwd 'you)
+          (se 'me (switch-helper bfsen)))
+         ((or (equal? fwd 'me)
+              (equal? fwd 'I))
+          (se 'you (switch-helper bfsen)))
+         ((equal? fwd 'am)
+          (se 'are (switch-helper bfsen)))
+         ((equal? fwd 'are)
+          (se 'am (switch-helper bfsen)))
+         ((equal? fwd 'was)
+          (se 'were (switch-helper bfsen)))
+         ((equal? fwd 'were)
+          (se 'was (switch-helper bfsen)))
+         ((equal? fwd 'my)
+          (se 'your (switch-helper bfsen)))
+         ((equal? fwd 'your)
+          (se 'my (switch-helper bfsen)))
+         ((equal? fwd 'yours)
+          (se 'mine (switch-helper bfsen)))
+         ((equal? fwd 'mine)
+          (se 'yours (switch-helper bfsen)))
+         (else (se fwd
+                   (switch-helper bfsen))))))))
+      
+    (cond((empty? sent)
+          '(how can I help you ?))
+      ((equal?(first sent) 'hello) '(hello there!))
+         ((and(equal? (first sent) 'I)
+              (equal? (first (bf sent))'am))
+          (se 'why 'are 'you (switch-helper (bf(bf sent)))))
+         ((equal? (last sent) '?)
+          '(I can not answer your question.))
+         
+         (else
+          (switcherbot sent)))
   )
 
 ;;Q8 - reactorbot-creator
   (define (reactorbot-creator bot pat out)
     ;;insert your answer here
-    (error "not yet implemented")
+    (lambda(sent)
+      (cond((equal? pat sent)out)
+           (else (bot sent))))
   )
 
 ;;Q9 - replacerbot-creator
   (define (replacerbot-creator bot pat before after)
     ;;insert your answer here
-    (error "not yet implemented")
+    (lambda(sent)
+      (let ((result ((matcherbot-creator pat)sent)))
+        (if(not(boolean? result))
+           (se before result after)
+           (bot sent))))
   )
 
 ;;Q10 - exagerate
   (define (exaggerate bot n)
     ;;insert your answer here
-    (error "not yet implemented")
+    (define (filter-adj sent)
+      (filter (lambda(wd)
+                (adjective? wd))
+              sent))
+    (define (repeatvery num)
+      (cond((= num 0) '())
+           (else (se 'very (repeatvery (- num 1))))))
+    
+    (define (addvery sen)
+      (cond((empty? sen)'())
+           ((adjective? (first sen))
+            (se (repeatvery n) (first sen) (addvery (bf sen))))
+           (else (se (first sen) (addvery (bf sen))))))
+    (lambda(sent)
+      (if(empty? (filter-adj sent))
+         (bot sent)
+          (addvery sent)))
   )
 
 ;;REMEMBER TO ADD YOUR OWN TESTS TO GRADER.RKT!
